@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body { 
+            width: 320px; 
+            margin: 0;
+            padding: 20px; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            color: var(--text-main);
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px 20px;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            gap: 10px;
+        }
+
+        .header img {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 12px 14px; 
+            box-sizing: border-box; 
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        #save {
+            background: var(--text-main);
+            color: var(--primary);
+            box-shadow: 0 4px 14px rgba(255, 255, 255, 0.25);
+        }
+
+        #save:hover {
+            background: #f8fafc;
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
+        #disable { 
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        #disable:hover {
+            background: rgba(239, 68, 68, 0.25);
+            color: #fee2e2;
+        }
+
+        /* Status Indicator */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.active {
+            background: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-panel">
+        <div class="header">
+            <img src="icons/icon48.png" alt="Logo">
+            <h3>292ProxySwitcher</h3>
+            <div class="status-dot" id="statusIndicator"></div>
+        </div>
+        
+        <div class="form-group">
+            <label>Cấu hình Proxy</label>
+            <input type="text" id="proxyString" placeholder="IP:Port:User:Pass" autocomplete="off" spellcheck="false" />
+        </div>
+        
+        <div class="button-group">
+            <button id="save">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                Lưu & Kích hoạt
+            </button>
+            <button id="disable">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+                Tắt Proxy
+            </button>
+        </div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
