@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <title>292ProxySwitcher - Auto Config</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #22c55e;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            width: 340px;
+            min-height: 200px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            padding: 28px 24px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        .icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        h2 {
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .proxy-info {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.9);
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            min-height: 36px;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot.success { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .dot.error   { background: var(--danger);  box-shadow: 0 0 8px var(--danger); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <span class="icon">🛡️</span>
+        <h2>292ProxySwitcher</h2>
+        <p class="subtitle">Auto configuration</p>
+        <div class="proxy-info" id="proxyInfo">Đang đọc thông số...</div>
+        <div class="status" id="status">
+            <div class="spinner"></div>
+            <span>Đang cấu hình proxy...</span>
+        </div>
+    </div>
+    <script src="config.js"></script>
+</body>
+</html>
