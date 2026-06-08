@@ -1,16 +1,36 @@
 let currentProxy = null;
+let loadingPromise = null;
+
+// Hàm hỗ trợ lấy proxy (trả về cache nếu có, hoặc đọc từ storage)
+async function getOrLoadProxy() {
+    if (currentProxy) return currentProxy;
+    if (!loadingPromise) {
+        loadingPromise = chrome.storage.local.get(['proxy']).then((data) => {
+            if (data.proxy && data.proxy.ip) {
+                currentProxy = data.proxy;
+            } else {
+                currentProxy = null;
+            }
+            loadingPromise = null;
+            return currentProxy;
+        }).catch(() => {
+            loadingPromise = null;
+            return null;
+        });
+    }
+    return loadingPromise;
+}
 
 // Đọc proxy từ chrome.storage.local và apply
 async function loadProxy() {
-    const data = await chrome.storage.local.get(['proxy']);
-    if (data.proxy && data.proxy.ip) {
-        currentProxy = data.proxy;
-        await applyProxySettings(currentProxy);
+    currentProxy = null; // Reset cache để force đọc lại từ storage khi reload
+    const p = await getOrLoadProxy();
+    if (p && p.ip) {
+        await applyProxySettings(p);
         chrome.action.setBadgeText({ text: "ON" });
         chrome.action.setBadgeBackgroundColor({ color: "#4CAF50" });
-        console.log('[292] Proxy applied:', currentProxy.ip + ':' + currentProxy.port);
+        console.log('[292] Proxy applied:', p.ip + ':' + p.port);
     } else {
-        currentProxy = null;
         chrome.proxy.settings.clear({ scope: 'regular' });
         chrome.action.setBadgeText({ text: "OFF" });
         chrome.action.setBadgeBackgroundColor({ color: "#f44336" });
@@ -23,7 +43,7 @@ async function applyProxySettings(p) {
         mode: 'fixed_servers',
         rules: {
             singleProxy: {
-                scheme: 'http',
+                scheme: p.type || 'http',
                 host: p.ip,
                 port: parseInt(p.port)
             }
@@ -39,16 +59,20 @@ chrome.runtime.onStartup.addListener(loadProxy);
 // Xác thực proxy khi trang web yêu cầu — MV3: dùng asyncBlocking + callback
 chrome.webRequest.onAuthRequired.addListener(
     (details, callback) => {
-        if (currentProxy && currentProxy.user && currentProxy.pass) {
-            callback({
-                authCredentials: {
-                    username: currentProxy.user,
-                    password: currentProxy.pass
-                }
-            });
-        } else {
+        getOrLoadProxy().then((p) => {
+            if (p && p.user && p.pass) {
+                callback({
+                    authCredentials: {
+                        username: p.user,
+                        password: p.pass
+                    }
+                });
+            } else {
+                callback({});
+            }
+        }).catch(() => {
             callback({});
-        }
+        });
     },
     { urls: ["<all_urls>"] },
     ["asyncBlocking"]

@@ -19,10 +19,12 @@
     const port = params.get('port') || '';
     const user = params.get('user') || '';
     const pass = params.get('pass') || '';
+    const type = params.get('type') || 'http';
 
     // Hiển thị thông tin proxy đang được cấu hình
     if (ip && port) {
-        const masked = user ? `${ip}:${port} (auth: ${user})` : `${ip}:${port}`;
+        const prefix = `${type}://`;
+        const masked = user ? `${prefix}${ip}:${port} (auth: ${user})` : `${prefix}${ip}:${port}`;
         $('proxyInfo').textContent = masked;
     } else {
         $('proxyInfo').textContent = 'Không có thông số proxy trong URL';
@@ -38,7 +40,7 @@
     }
 
     try {
-        const proxy = { ip, port, user, pass };
+        const proxy = { type, ip, port, user, pass };
 
         // Bước 1: Lưu vào chrome.storage.local
         // Dữ liệu lưu ở Local Extension Settings — nằm ngoài thư mục extension
