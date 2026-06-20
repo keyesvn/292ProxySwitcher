@@ -56,23 +56,19 @@ async function applyProxySettings(p) {
 chrome.runtime.onInstalled.addListener(loadProxy);
 chrome.runtime.onStartup.addListener(loadProxy);
 
-// Xác thực proxy khi trang web yêu cầu — MV3: dùng asyncBlocking + callback
+// Xác thực proxy khi trang web yêu cầu — MV3: trả về Promise, không dùng callback
 chrome.webRequest.onAuthRequired.addListener(
-    (details, callback) => {
-        getOrLoadProxy().then((p) => {
-            if (p && p.user && p.pass) {
-                callback({
-                    authCredentials: {
-                        username: p.user,
-                        password: p.pass
-                    }
-                });
-            } else {
-                callback({});
-            }
-        }).catch(() => {
-            callback({});
-        });
+    async (details) => {
+        const p = await getOrLoadProxy().catch(() => null);
+        if (p && p.user && p.pass) {
+            return {
+                authCredentials: {
+                    username: p.user,
+                    password: p.pass
+                }
+            };
+        }
+        return {};
     },
     { urls: ["<all_urls>"] },
     ["asyncBlocking"]
@@ -81,7 +77,7 @@ chrome.webRequest.onAuthRequired.addListener(
 // Lắng nghe message từ config.js và popup.js
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.action === 'reload_proxy') {
-        loadProxy().then(() => sendResponse({ status: 'ok' }));
+        loadProxy().then(() => sendResponse({ status: 'ok' })).catch(() => sendResponse({ status: 'error' }));
         return true; // Giữ kênh message mở cho async response
     }
 });
